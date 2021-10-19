@@ -1,7 +1,7 @@
 use failure::{Fail};
 
 /// Common Error for UDP Command Handling
-#[derive(Debug, Fail, Clone, PartialEq)]
+#[derive(Serialize, Debug, Fail, Clone, PartialEq)]
 // pub enum Error<E: Fail + Clone + PartialEq> {
 pub enum CubeOSError {
     /// Wrong Number of Arguments
