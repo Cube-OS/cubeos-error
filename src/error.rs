@@ -1,4 +1,5 @@
 use failure::{Fail};
+use serde::Serialize;
 
 /// Common Error for UDP Command Handling
 #[derive(Serialize, Debug, Fail, Clone, PartialEq)]
