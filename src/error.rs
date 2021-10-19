@@ -1,3 +1,5 @@
+use failure::{bail,Error as FailureError, Fail};
+
 /// Common Error for UDP Command Handling
 #[derive(Debug, Fail, Clone, PartialEq)]
 // pub enum Error<E: Fail + Clone + PartialEq> {
