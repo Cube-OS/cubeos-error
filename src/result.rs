@@ -1,0 +1,1 @@
+pub type CubeOSResult<T> = Result<T,CubeOSError>;
