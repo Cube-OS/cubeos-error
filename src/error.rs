@@ -1,4 +1,4 @@
-use failure::{bail,Error as FailureError, Fail};
+use failure::{Fail};
 
 /// Common Error for UDP Command Handling
 #[derive(Debug, Fail, Clone, PartialEq)]
