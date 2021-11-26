@@ -15,6 +15,7 @@ pub enum Error {
     #[fail(display = "Service Error")]
     ServiceError(u8),
     // Other Error,
+    #[fail(display = "Other Error")]
     Other,
 }
 
