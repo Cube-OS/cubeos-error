@@ -14,7 +14,8 @@ pub enum Error {
     /// Service specific Error
     #[fail(display = "Service Error")]
     ServiceError(u8),
-    // E,
+    // Other Error,
+    Other,
 }
 
 pub type Result<T> = core::result::Result<T,Error>;
