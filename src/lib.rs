@@ -1,8 +1,8 @@
 use failure::{Fail};
-use serde::Serialize;
+use serde::{Serialize,Deserialize};
 
 /// Common Error for UDP Command Handling
-#[derive(Serialize, Debug, Fail, Clone, PartialEq)]
+#[derive(Serialize, Deserialize, Debug, Fail, Clone, PartialEq)]
 // pub enum Error<E: Fail + Clone + PartialEq> {
 pub enum Error {
     /// Wrong Number of Arguments
