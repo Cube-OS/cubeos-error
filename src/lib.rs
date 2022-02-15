@@ -1,5 +1,7 @@
 use failure::{Fail};
 use serde::{Serialize,Deserialize};
+use std::convert::Infallible;
+// use bincode::*;
 
 /// Common Error for UDP Command Handling
 #[derive(Serialize, Deserialize, Debug, Fail, Clone, PartialEq)]
@@ -23,6 +25,12 @@ pub enum Error {
     /// IO Error
     #[fail(display = "IO Error")]
     Io(u8),
+    /// Infallible
+    #[fail(display = "Infallible")]
+    Infallible,
+    /// Bincode Error
+    #[fail(display = "bincode Error")]
+    Bincode(u8),
 }
 impl From<failure::Error> for Error {
     fn from(e: failure::Error) -> Error {
@@ -73,6 +81,26 @@ impl From<std::io::Error> for Error {
             std::io::ErrorKind::OutOfMemory => Error::Io(38),
             std::io::ErrorKind::Other => Error::Io(39),
             _ => Error::Io(40),
+        }
+    }
+}
+impl From<Infallible> for Error {
+    fn from(_i: Infallible) -> Error {
+        Error::Infallible
+    }
+}
+impl From<bincode::Error> for Error {
+    fn from(b: bincode::Error) -> Error {
+        match *b {
+            bincode::ErrorKind::Io(_) => Error::Bincode(0),
+            bincode::ErrorKind::InvalidUtf8Encoding(_) => Error::Bincode(1),
+            bincode::ErrorKind::InvalidBoolEncoding(_) => Error::Bincode(2),
+            bincode::ErrorKind::InvalidCharEncoding => Error::Bincode(3),
+            bincode::ErrorKind::InvalidTagEncoding(_) => Error::Bincode(4),
+            bincode::ErrorKind::DeserializeAnyNotSupported => Error::Bincode(5),
+            bincode::ErrorKind::SizeLimit => Error::Bincode(6),
+            bincode::ErrorKind::SequenceMustHaveLength => Error::Bincode(7),
+            bincode::ErrorKind::Custom(_) => Error::Bincode(8),            
         }
     }
 }
