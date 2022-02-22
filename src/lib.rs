@@ -1,6 +1,7 @@
 use failure::{Fail};
 use serde::{Serialize,Deserialize};
 use std::convert::Infallible;
+use std::sync::{PoisonError,MutexGuard};
 // use bincode::*;
 
 /// Common Error for UDP Command Handling
@@ -31,6 +32,9 @@ pub enum Error {
     /// Bincode Error
     #[fail(display = "bincode Error")]
     Bincode(u8),
+    /// PoisonError
+    #[fail(display = "Poisened Mutex")]
+    PoisonError,
 }
 impl From<failure::Error> for Error {
     fn from(e: failure::Error) -> Error {
@@ -102,6 +106,11 @@ impl From<bincode::Error> for Error {
             bincode::ErrorKind::SequenceMustHaveLength => Error::Bincode(7),
             bincode::ErrorKind::Custom(_) => Error::Bincode(8),            
         }
+    }
+}
+impl <'a, T: Sized + 'a> From<PoisonError<MutexGuard<'a,T>>> for Error {
+    fn from(_e: PoisonError<MutexGuard<'a,T>>) -> Error {
+        Error::PoisonError
     }
 }
 
