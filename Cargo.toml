@@ -9,4 +9,4 @@ edition = "2018"
 [dependencies]
 failure = "0.1.2"
 serde = {version = "1.0", features = ["derive"]}
-bincode = { git = "ssh://git@github.com/Cube-OS/bincode.git", branch = "v1.x"}
+bincode = { git = "ssh://git@github.com/Cube-OS/bincode.git"}
