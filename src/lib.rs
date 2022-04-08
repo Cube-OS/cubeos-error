@@ -2,7 +2,6 @@ use failure::{Fail};
 use serde::{Serialize,Deserialize};
 use std::convert::Infallible;
 use std::sync::{PoisonError,MutexGuard};
-// use bincode::*;
 
 /// Common Error for UDP Command Handling
 #[derive(Serialize, Deserialize, Debug, Fail, Clone, PartialEq)]
@@ -35,6 +34,9 @@ pub enum Error {
     /// PoisonError
     #[fail(display = "Poisened Mutex")]
     PoisonError,
+    /// UART
+    #[fail(display = "UART Error")]
+    Uart(u8),
 }
 impl From<failure::Error> for Error {
     fn from(e: failure::Error) -> Error {
@@ -159,6 +161,22 @@ impl From<bincode::Error> for Error {
 impl <'a, T: Sized + 'a> From<PoisonError<MutexGuard<'a,T>>> for Error {
     fn from(_e: PoisonError<MutexGuard<'a,T>>) -> Error {
         Error::PoisonError
+    }
+}
+impl From<rust_uart::UartError> for Error {
+    fn from(e: rust_uart::UartError) -> Error {
+        match e {
+            rust_uart::UartError::GenericError => Error::Uart(0),
+            rust_uart::UartError::PortBusy => Error::Uart(1),
+            rust_uart::UartError::SerialError(s) => {
+                match s {
+                    serial::ErrorKind::NoDevice => Error::Uart(2),
+                    serial::ErrorKind::InvalidInput => Error::Uart(3),
+                    // serial::ErrorKind::Unknown => Error::Uart(4),
+                    serial::ErrorKind::Io(io) => Error::from(io),
+                }
+            }
+        }
     }
 }
 
