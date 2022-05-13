@@ -25,6 +25,9 @@ use std::sync::{PoisonError,MutexGuard,RwLockReadGuard};
 #[derive(Serialize, Deserialize, Debug, Fail, Clone, PartialEq)]
 // pub enum Error<E: Fail + Clone + PartialEq> {
 pub enum Error {
+    /// None
+    #[fail(display = "None")]
+    None,
     /// Wrong Number of Arguments
     #[fail(display = "Wrong Number of Arguments")]
     WrongNoArgs,
