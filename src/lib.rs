@@ -19,7 +19,7 @@
 use failure::{Fail};
 use serde::{Serialize,Deserialize};
 use std::convert::Infallible;
-use std::sync::{PoisonError,MutexGuard};
+use std::sync::{PoisonError,MutexGuard,RwLockReadGuard};
 
 /// Common Error for UDP Command Handling
 #[derive(Serialize, Deserialize, Debug, Fail, Clone, PartialEq)]
@@ -49,9 +49,12 @@ pub enum Error {
     /// Bincode Error
     #[fail(display = "bincode Error")]
     Bincode(u8),
-    /// PoisonError
+    /// Poisoned Mutex Error
     #[fail(display = "Poisened Mutex")]
-    PoisonError,
+    PoisonedMutex,
+    /// PoisonError RwLockReadGuard
+    #[fail(display = "Poisened RwLockReadGuard")]
+    PoisonedRwLock,
     /// UART
     #[fail(display = "UART Error")]
     Uart(u8),
@@ -178,7 +181,12 @@ impl From<bincode::Error> for Error {
 }
 impl <'a, T: Sized + 'a> From<PoisonError<MutexGuard<'a,T>>> for Error {
     fn from(_e: PoisonError<MutexGuard<'a,T>>) -> Error {
-        Error::PoisonError
+        Error::PoisonedMutex
+    }
+}
+impl <'a, T: Sized + 'a> From<PoisonError<RwLockReadGuard<'a,T>>> for Error {
+    fn from(_e: PoisonError<RwLockReadGuard<'a,T>>) -> Error {
+        Error::PoisonedRwLock
     }
 }
 impl From<rust_uart::UartError> for Error {
