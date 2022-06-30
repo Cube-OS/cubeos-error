@@ -37,6 +37,9 @@ pub enum Error {
     /// Service specific Error
     #[fail(display = "Service Error")]
     ServiceError(u8),
+    /// Service specific Error multiple fields
+    #[fail(display = "Service Error")]
+    ServiceErrorX(u8,u8),
     /// Other Error,
     #[fail(display = "Other Error")]
     Other,
