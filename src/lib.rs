@@ -314,4 +314,4 @@ impl From<Errno> for Error {
     }
 }
 
-type Result<T> = core::result::Result<T,Error>;
+pub type Result<T> = core::result::Result<T,Error>;
