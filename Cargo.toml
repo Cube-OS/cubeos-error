@@ -13,3 +13,6 @@ serial = "0.4.0"
 bincode = { git = "ssh://git@github.com/Cube-OS/bincode.git"}
 rust-uart = { git = "ssh://git@github.com/Cube-OS/rust-uart"}
 nix = "0.24.1"
+syslog = "^6.0.1"
+kubos-telemetry-db = { path = "../telemetry-db-api"}
+diesel = { version = "1.0.0", features = ["sqlite"] }

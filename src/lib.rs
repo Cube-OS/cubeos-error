@@ -22,6 +22,7 @@ use serde::{Serialize,Deserialize};
 use std::convert::Infallible;
 use std::sync::{PoisonError,MutexGuard,RwLockReadGuard};
 use nix::errno::Errno;
+use syslog::Error as SyslogError;
 
 /// Common Error for UDP Command Handling
 #[derive(Serialize, Deserialize, Debug, Fail, Clone, PartialEq)]
@@ -69,6 +70,12 @@ pub enum Error {
     /// Nix
     #[fail(display = "Nix Error")]
     NixError(u8),
+    /// Syslog
+    #[fail(display = "Syslog Error")]
+    Syslog(u8),
+    /// Diesel
+    #[fail(display = "Diesel Error")]
+    Diesel(u8),
 }
 impl From<failure::Error> for Error {
     fn from(e: failure::Error) -> Error {
@@ -149,6 +156,11 @@ impl From<bincode::Error> for Error {
 }
 impl From<PoisonError<MutexGuard<'_,()>>> for Error {
     fn from(_e: PoisonError<MutexGuard<'_,()>>) -> Error {
+        Error::PoisonedMutex
+    }
+}
+impl From<PoisonError<MutexGuard<'_,kubos_telemetry_db::Database>>> for Error {
+    fn from(_e: PoisonError<MutexGuard<'_,kubos_telemetry_db::Database>>) -> Error {
         Error::PoisonedMutex
     }
 }
@@ -310,6 +322,36 @@ impl From<Errno> for Error {
             Errno::EHWPOISON   => Error::NixError(131),
             Errno::UnknownErrno => Error::NixError(0),
             _ => Error::NixError(0),
+        }
+    }
+}
+
+impl From<SyslogError> for Error {
+    fn from(e: SyslogError) -> Error {
+        match e.kind() {
+            syslog::ErrorKind::Io(i) => Error::from(i.kind()),
+            syslog::ErrorKind::Msg(_) => Error::Syslog(0),
+            syslog::ErrorKind::Initialization => Error::Syslog(1),
+            syslog::ErrorKind::UnsupportedPlatform => Error::Syslog(2),
+            syslog::ErrorKind::Format => Error::Syslog(3),
+            syslog::ErrorKind::Write => Error::Syslog(4),
+            &_ => Error::Syslog(5),
+        }
+    }
+}
+
+impl From<diesel::result::Error> for Error {
+    fn from(e: diesel::result::Error) -> Error {
+        match e {
+            diesel::result::Error::InvalidCString(_) => Error::Diesel(0),
+            diesel::result::Error::DatabaseError(_,_) => Error::Diesel(1),
+            diesel::result::Error::NotFound => Error::Diesel(2),
+            diesel::result::Error::QueryBuilderError(_) => Error::Diesel(3),
+            diesel::result::Error::DeserializationError(_) => Error::Diesel(4),
+            diesel::result::Error::SerializationError(_) => Error::Diesel(5),
+            diesel::result::Error::RollbackTransaction => Error::Diesel(6),
+            diesel::result::Error::AlreadyInTransaction => Error::Diesel(7),
+            _ => Error::Diesel(8),
         }
     }
 }
