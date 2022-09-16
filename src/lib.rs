@@ -159,8 +159,8 @@ impl From<PoisonError<MutexGuard<'_,()>>> for Error {
         Error::PoisonedMutex
     }
 }
-impl From<PoisonError<MutexGuard<'_,kubos_telemetry_db::Database>>> for Error {
-    fn from(_e: PoisonError<MutexGuard<'_,kubos_telemetry_db::Database>>) -> Error {
+impl From<PoisonError<MutexGuard<'_,cubeos_telemetry_db::Database>>> for Error {
+    fn from(_e: PoisonError<MutexGuard<'_,cubeos_telemetry_db::Database>>) -> Error {
         Error::PoisonedMutex
     }
 }
